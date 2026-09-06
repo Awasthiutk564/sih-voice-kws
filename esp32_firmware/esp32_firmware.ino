@@ -19,7 +19,7 @@ const char* WIFI_SSID = "Lucifer";
 const char* WIFI_PASSWORD = "Lucifer@12345";
 
 // Server Configuration
-const char* SERVER_IP = "10.229.34.222"; // e.g. "192.168.1.100"
+const char* SERVER_IP = "192.168.137.1"; // e.g. "192.168.1.100"
 const uint16_t SERVER_PORT = 8766;
 const char* SERVER_PATH = "/";
 
