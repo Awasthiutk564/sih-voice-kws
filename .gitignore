@@ -1,0 +1,72 @@
+# =====================================================================
+# Git Ignore Configuration (Model-Only Repository)
+# =====================================================================
+
+# 1. Microphone & Live Streaming Tools
+live_mic.py
+live_microphone_transcription/
+live_transcript_log.txt
+run_live_mic.bat
+
+# 2. Results, Benchmarks & Diagnostics
+results/
+benchmark_results.json
+transcription_results.txt
+MOONSHINE_MODEL_SUMMARY.md
+*.log
+
+# 3. Dataset & Testing Scripts / Batch files
+test_sample.py
+select_and_test.bat
+*.bat
+*.csv
+*.tsv
+
+# 4. Audio & Dataset Assets
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.pcm
+dataset/
+datasets/
+data/
+audio/
+samples/
+
+# 5. Legacy / Alternative Model Scripts
+moonshine_esp32_model.py
+
+# 6. Python Cache & Build Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# 7. Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 8. IDE & Editor Artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 9. OS Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
