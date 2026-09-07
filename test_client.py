@@ -1,13 +1,5 @@
 import asyncio
 import websockets
-
-async def test():
-       async with websockets.connect("ws://localhost:8766") as websocket:
-           await websocket.send("Hello from test client!")
-           print("Message sent!")
-
-import asyncio
-import websockets
 import sounddevice as sd
 import queue
 
