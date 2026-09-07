@@ -1,3 +1,76 @@
+# =====================================================================
+# Git Ignore Configuration (SIH Voice KWS & ASR)
+# =====================================================================
+
+# 1. Downloaded Offline Models
 model/
-__pycache__/
+models/
+
+# 2. Microphone & Live Streaming Tools
+live_mic.py
+live_microphone_transcription/
+live_transcript_log.txt
+run_live_mic.bat
+
+# 3. Results, Benchmarks & Diagnostics
+results/
+benchmark_results.json
+transcription_results.txt
+MOONSHINE_MODEL_SUMMARY.md
+*.log
+
+# 4. Testing Scripts & Batch files
+test_sample.py
+select_and_test.bat
+*.bat
+*.csv
+*.tsv
+
+# 5. Audio & Dataset Assets
 *.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.pcm
+dataset/
+datasets/
+data/
+audio/
+samples/
+
+# 6. Legacy / Alternative Model Scripts
+moonshine_esp32_model.py
+
+# 7. Python Cache & Build Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# 8. Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 9. IDE & Editor Artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 10. OS Metadata
+.DS_Store
+Thumbs.db
+desktop.ini

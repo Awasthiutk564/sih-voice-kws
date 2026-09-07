@@ -1,0 +1,4 @@
+torch>=2.0.0
+numpy>=1.22.0
+websockets>=11.0
+vosk>=0.3.45
