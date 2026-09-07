@@ -38,7 +38,7 @@ async def handler(websocket):
             if rec.AcceptWaveform(message):
                 result = json.loads(rec.Result())
                 if result.get("text"):
-                    print(f"Final Sentence: {result['text']}")
+                    print(f"Final Sentencew0: {result['text']}")
                     
                     if t_wake != 0:
                         t_end = time.time() * 1000
