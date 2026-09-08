@@ -4,7 +4,8 @@
 
 # 1. Downloaded Offline Models
 model/
-models/
+!models/kws/
+!models/asr/
 
 # 2. Microphone & Live Streaming Tools
 live_mic.py
@@ -16,7 +17,7 @@ run_live_mic.bat
 results/
 benchmark_results.json
 transcription_results.txt
-MOONSHINE_MODEL_SUMMARY.md
+STREAMING_ASR_MODEL_SUMMARY.md
 *.log
 
 # 4. Testing Scripts & Batch files
@@ -41,7 +42,7 @@ audio/
 samples/
 
 # 6. Legacy / Alternative Model Scripts
-moonshine_esp32_model.py
+esp32_streaming_model.py
 
 # 7. Python Cache & Build Artifacts
 __pycache__/

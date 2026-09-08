@@ -12,8 +12,8 @@
                                       │              Server / Host Side              │
                                       │                                              │
 ┌───────────────────────────┐         │  ┌────────────────┐     ┌──────────────────┐ │
-│   ESP32-S3 Edge Device    │         │  │ WebSocket      │     │ Moonshine        │ │
-│                           │         │  │ Server         │────▶│ Streaming ASR    │ │
+│   ESP32-S3 Edge Device    │         │  │ WebSocket      │     │ Streaming        │ │
+│                           │         │  │ Server         │────▶│ ASR Engine       │ │
 │  ┌─────────────────────┐  │  Audio  │  │ (server.py)    │     │ (model.py)       │ │
 │  │ I2S DMA Ring Buffer │──┼─────────┼─▶└────────────────┘     └──────────────────┘ │
 │  │ (2s Pre-roll audio) │  │ Stream  │                                              │
@@ -28,7 +28,7 @@
 
 1. **ESP32-S3 Edge (TinyML KWS)**: Continuously samples I2S audio via Direct Memory Access (DMA) into a 2-second pre-roll ring buffer while keeping the CPU idle. A highly quantized CNN powered by TensorFlow Lite for Microcontrollers (TFLM) analyzes the buffer locally.
 2. **Zero-Clipping Retroactive Stream**: Upon detecting a custom wake word, it instantly opens a WebSocket connection and streams the buffered pre-roll audio along with the live audio feed (eliminating first-word clipping).
-3. **Moonshine Streaming ASR**: Real-time causal streaming Automated Speech Recognition engine with $O(1)$ stateful KV caching for instant speech-to-text transcriptions.
+3. **Streaming ASR Engine**: Real-time causal streaming Automated Speech Recognition engine with $O(1)$ stateful KV caching for instant speech-to-text transcriptions.
 
 ---
 
@@ -37,14 +37,19 @@
 ```text
 .
 ├── esp32_firmware/
-│   └── esp32_firmware.ino      # ESP32-S3 I2S DMA audio capture & TFLM wake-word engine
-├── server.py                   # WebSocket streaming server for receiving edge audio feeds
-├── model.py                    # Complete self-contained Moonshine Streaming ASR architecture & session engine
-├── test_client.py              # Test client for simulating edge audio streaming
-├── record_and_send_test.py     # Recording & audio transmission test utility
-├── requirements.txt            # Python dependencies (torch, websockets, numpy)
-├── README.md                   # System documentation & usage guide
-└── .gitignore                  # Git ignore rules for clean repository state
+│   ├── esp32_firmware.ino                # ESP32-S3 I2S DMA audio capture & TCP streaming
+│   ├── khuskhus_kws_tflite_model.h       # C byte array header of trained "Khus Khus" KWS
+│   └── streaming_asr_tflite_model.h      # C byte array header of Streaming ASR for ESP32
+├── server.py                             # 2-Stage TCP server (KhusKhus-KWS -> TFLite ASR)
+├── tflite_asr_model.py                   # TensorFlow/Keras replica of model.py + TFLite & C export
+├── tflite_asr_engine.py                  # TFLite Interpreter streaming ASR engine with CTC decoder
+├── model.py                              # PyTorch Streaming ASR architecture & session engine
+├── models/
+│   ├── kws/best_model.pth                # Trained KhusKhus-KWS PyTorch weights
+│   └── asr/streaming_asr.tflite          # Exported TensorFlow Lite Streaming ASR model
+├── live_transcript_log.txt               # Real-time transcript logging
+├── requirements.txt                      # Python dependencies (torch, tensorflow, numpy)
+└── README.md                             # System documentation & usage guide
 ```
 
 ---
@@ -59,17 +64,17 @@ cd sih-voice-kws
 pip install -r requirements.txt
 ```
 
-### 2. Moonshine Streaming ASR Usage (`model.py`)
+### 2. Streaming ASR Usage (`model.py`)
 
 #### Instantiation
 ```python
-from model import MoonshineStreamingASR, StreamingAudioSession
+from model import StreamingASR, StreamingAudioSession
 
 # Instantiate compact ESP32-S3 Micro architecture (~1.5M parameters)
-model = MoonshineStreamingASR.create_esp32_micro()
+model = StreamingASR.create_esp32_micro()
 
 # Or instantiate standard Tiny architecture (~17M parameters)
-# model = MoonshineStreamingASR.create_tiny()
+# model = StreamingASR.create_tiny()
 
 print(f"Total Parameters: {model.count_parameters():,}")
 print(f"Model Size: {model.model_size_mb():.2f} MB")
@@ -78,10 +83,10 @@ print(f"Model Size: {model.model_size_mb():.2f} MB")
 #### Real-Time Streaming Audio Session
 ```python
 import numpy as np
-from model import MoonshineStreamingASR, StreamingAudioSession
+from model import StreamingASR, StreamingAudioSession
 
 # Initialize model & streaming session
-model = MoonshineStreamingASR.create_esp32_micro()
+model = StreamingASR.create_esp32_micro()
 session = StreamingAudioSession(model=model, chunk_samples=6144)
 
 # Stream 16kHz audio in real-time chunks (e.g. from WebSocket)
@@ -96,14 +101,21 @@ final_emissions = session.flush()
 print(f"Full Transcript: '{session.current_transcript}'")
 ```
 
-### 3. Running the Server
+### 3. Running the Server & Voice Assistant
 
 ```bash
 python server.py
 ```
+- **Stage 1 (Wake Listener)**: Continuously monitors the live 16kHz audio stream from the ESP32-S3 INMP441 microphone for the wake word **"Khus Khus"**.
+- **Stage 2 (Continuous Live Transcription)**: As soon as "Khus Khus" is detected, KWS stops and high-accuracy ASR takes over indefinitely, transcribing all continuous speech in real time to the console and `live_transcript_log.txt`.
 
 ### 4. Running the ESP32-S3 Firmware
-Flash `esp32_firmware/esp32_firmware.ino` to your ESP32-S3 board configured with I2S microphone pins and WiFi/WebSocket target address.
+Flash `esp32_firmware/esp32_firmware.ino` to your ESP32-S3 board with the INMP441 microphone connected:
+- **WS / LRCL**: `GPIO 5`
+- **SD / DOUT**: `GPIO 4`
+- **SCK / BCLK**: `GPIO 6`
+- **L/R**: `GND` (Left channel)
+- **VDD**: `3.3V`, **GND**: `GND`
 
 ---
 

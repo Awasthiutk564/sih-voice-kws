@@ -1,6 +1,6 @@
-"""Moonshine Streaming ASR Model for Edge & Embedded Devices.
+"""Streaming ASR Model for Edge & Embedded Devices.
 
-A standalone, self-contained implementation replicating Useful Sensors' Moonshine Streaming architecture:
+A standalone, self-contained implementation of low-latency causal streaming ASR:
 - 3-Layer 1D Causal Convolutional Audio Stem (384x downsampling, direct raw waveform processing)
 - Rotary Position Embeddings (RoPE)
 - Pre-LN Streaming Causal Transformer Encoder with Stateful KV-Caching
@@ -333,7 +333,7 @@ class TransformerBlock(nn.Module):
 
 
 # =====================================================================
-# 4. Moonshine Streaming Model & Session State
+# 4. Streaming ASR Model & Session State
 # =====================================================================
 
 class StreamingSessionState:
@@ -352,8 +352,8 @@ class StreamingSessionState:
         self.total_audio_samples = 0
 
 
-class MoonshineStreamingASR(nn.Module):
-    """Moonshine Streaming Low-Latency ASR Model."""
+class StreamingASR(nn.Module):
+    """Streaming Low-Latency ASR Model."""
 
     def __init__(
         self,
@@ -451,7 +451,7 @@ class MoonshineStreamingASR(nn.Module):
         return chunk_logits, session_state
 
     @classmethod
-    def create_esp32_micro(cls) -> "MoonshineStreamingASR":
+    def create_esp32_micro(cls) -> "StreamingASR":
         """Factory for Ultra-Compact ESP32-S3 Micro ASR (~1.5M params, sub-ms latency)."""
         return cls(
             stem_channels=[32, 64, 128],
@@ -466,8 +466,8 @@ class MoonshineStreamingASR(nn.Module):
         )
 
     @classmethod
-    def create_tiny(cls) -> "MoonshineStreamingASR":
-        """Factory for Moonshine Streaming Tiny (~17M params)."""
+    def create_tiny(cls) -> "StreamingASR":
+        """Factory for Streaming Tiny (~17M params)."""
         return cls(
             stem_channels=[64, 128, 256],
             stem_kernel_sizes=[128, 7, 5],
@@ -566,7 +566,7 @@ class StreamingAudioSession:
 
     def __init__(
         self,
-        model: MoonshineStreamingASR,
+        model: StreamingASR,
         tokenizer: Optional[CTCTokenizer] = None,
         chunk_samples: int = 6144,
         device: str = "cpu",
@@ -655,3 +655,4 @@ class StreamingAudioSession:
     @property
     def current_transcript(self) -> str:
         return self.decoder.full_transcript
+

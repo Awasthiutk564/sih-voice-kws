@@ -2,3 +2,5 @@ torch>=2.0.0
 numpy>=1.22.0
 websockets>=11.0
 vosk>=0.3.45
+moonshine_voice>=0.1.5
+tensorflow>=2.15.0

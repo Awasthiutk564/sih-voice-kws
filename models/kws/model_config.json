@@ -1,0 +1,26 @@
+{
+  "model_name": "KhusKhus-KWS",
+  "in_channels": 40,
+  "stem_channels": 32,
+  "stem_kernel": 5,
+  "ds1_channels": 48,
+  "ds1_kernel": 5,
+  "ds1_stride": 2,
+  "ds2_channels": 64,
+  "ds2_kernel": 5,
+  "ds2_stride": 2,
+  "ds3_channels": 64,
+  "ds3_kernel": 3,
+  "ds3_stride": 1,
+  "num_classes": 3,
+  "use_relu6": true,
+  "dropout": 0.1,
+  "statistics": {
+    "total_parameters": 16595,
+    "trainable_parameters": 16595,
+    "estimated_macs": 902096,
+    "estimated_fp32_size_kb": 64.82421875,
+    "estimated_int8_size_kb": 16.2060546875,
+    "max_activation_tensor_kb": 12.25
+  }
+}
